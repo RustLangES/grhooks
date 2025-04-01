@@ -15,7 +15,7 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/RustLangES/grhooks"
 
 [workspace]
-members = ["crates/core", "crates/config"]
+members = ["crates/core", "crates/config", "crates/gh-schemes"]
 
 [workspace.dependencies]
 clap = { version = "4.5", features = ["derive", "env"] }
