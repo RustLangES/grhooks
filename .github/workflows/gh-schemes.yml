@@ -1,0 +1,45 @@
+name: Update GitHub Webhook Schemas
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 1"
+  push:
+    branches:
+      - main
+    paths:
+      - "scripts/update-schemas.sh"
+      - "crates/gh-schemes/Cargo.toml"
+
+jobs:
+  update-schemas:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "22"
+
+      - name: Install typify
+        run: cargo install cargo-typify
+
+      - name: Run schema update script
+        run: bash scripts/update-schemas.sh
+
+      - name: Commit and push changes
+        if: success() && github.ref == 'refs/heads/main'
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add crates/gh-schemes
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update GitHub webhook schemas" && git push)
