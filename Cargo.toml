@@ -1,0 +1,24 @@
+[package]
+name = "grhooks"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+description.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[workspace.package]
+edition = "2024"
+authors = ["RustLangES contact@rustlang-es.org"]
+description = "Configurable github/gitlab webhook server"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/RustLangES/grhooks"
+
+[workspace]
+members = ["crates/core", "crates/config"]
+
+[workspace.dependencies]
+clap = { version = "4.5", features = ["derive", "env"] }
+
+[dependencies]
+clap.workspace = true
