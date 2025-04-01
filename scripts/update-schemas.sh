@@ -26,7 +26,7 @@ echo "Downloading GitHub webhooks schema (version ${LATEST_VERSION})..."
 curl -sSL "https://unpkg.com/${PACKAGE_NAME}@${LATEST_VERSION}/schema.json" -o "$SCHEMA_FILE"
 
 echo "Generating Rust types..."
-cargo typify "$SCHEMA_FILE" -o "$OUTPUT_FILE"
+cargo typify --no-builder "$SCHEMA_FILE" -o "$OUTPUT_FILE"
 
 echo "Formatting generated code..."
 rustfmt "$OUTPUT_FILE"
