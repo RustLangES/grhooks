@@ -18,7 +18,6 @@ repository = "https://github.com/RustLangES/grhooks"
 members = ["crates/core", "crates/config", "crates/gh-schemes"]
 
 [workspace.dependencies]
-clap = { version = "4.5", features = ["derive", "env"] }
 
 [dependencies]
-clap.workspace = true
+grhooks-config = { version = "0.1.0", path = "crates/config" }
