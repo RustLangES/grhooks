@@ -15,7 +15,7 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/RustLangES/grhooks"
 
 [workspace]
-members = ["crates/core", "crates/config", "crates/gh-schemes"]
+members = ["crates/core", "crates/config"]
 
 [workspace.dependencies]
 

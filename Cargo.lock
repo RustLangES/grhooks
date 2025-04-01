@@ -128,7 +128,6 @@ name = "grhooks-config"
 version = "0.1.0"
 dependencies = [
  "clap",
- "gh-schemes",
  "serde",
  "serde_json",
  "serde_yaml",

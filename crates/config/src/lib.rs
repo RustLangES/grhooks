@@ -3,8 +3,6 @@ use std::path::PathBuf;
 use clap::{Arg, Command};
 use serde::Deserialize;
 
-pub use gh_schemes;
-
 #[derive(Debug, Default, Deserialize)]
 pub enum Origin {
     #[default]
