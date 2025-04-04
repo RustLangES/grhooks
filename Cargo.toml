@@ -18,6 +18,27 @@ repository = "https://github.com/RustLangES/grhooks"
 members = ["crates/core", "crates/config"]
 
 [workspace.dependencies]
+serde_json = "1"
+tracing = "0.1"
 
 [dependencies]
+axum = { version = "0.8.3", default-features = false, features = [
+    "json",
+    "tracing",
+    "http1",
+    "http2",
+    "tokio",
+    "matched-path",
+] }
+constant_time_eq = "0.4.2"
 grhooks-config = { version = "0.1.0", path = "crates/config" }
+grhooks-core = { version = "0.1.0", path = "crates/core" }
+hex = "0.4.3"
+hmac = "0.12.1"
+serde_json.workspace = true
+sha1 = "0.10.6"
+sha2 = "0.10.8"
+srtemplate = { version = "0.3.2", path = "../../../rust/srtemplate" }
+tokio = { version = "1.44.1", default-features = false, features = ["full"] }
+tracing.workspace = true
+tracing-subscriber = "0.3.19"
