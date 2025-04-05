@@ -16,6 +16,8 @@ pub struct WebhookConfig {
 #[derive(Clone, Debug, Deserialize)]
 pub struct Config {
     pub port: u16,
+    #[serde(skip)]
+    pub verbose: String,
     pub webhooks: Vec<WebhookConfig>,
 }
 
@@ -32,6 +34,14 @@ pub fn get_config() -> Config {
                 .help("Path to the configuration file")
                 .value_parser(clap::builder::PathBufValueParser::new()),
         )
+        .arg(
+            Arg::new("verbose")
+                .short('v')
+                .long("verbose")
+                .global(true)
+                .action(clap::ArgAction::Count)
+                .help("Enable verbose logging"),
+        )
         .color(clap::ColorChoice::Always)
         .get_matches();
 
@@ -39,12 +49,17 @@ pub fn get_config() -> Config {
         .get_one::<PathBuf>("manifest")
         .expect("No config file provided");
 
+    let verbose =
+        std::env::var("GRHOOKS_LOG").unwrap_or_else(|_| args.get_count("verbose").to_string());
+
     println!("Reading configs from path: {config_path:?}");
 
     let cfg_content = std::fs::read_to_string(&config_path).unwrap();
 
-    toml::from_str(&cfg_content)
+    let config = toml::from_str(&cfg_content)
         .or_else(|_| serde_yaml::from_str(&cfg_content))
         .or_else(|_| serde_json::from_str(&cfg_content))
-        .expect("Failed to parse config")
+        .expect("Failed to parse config");
+
+    Config { verbose, ..config }
 }

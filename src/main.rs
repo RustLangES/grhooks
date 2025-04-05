@@ -1,3 +1,4 @@
+use std::str::FromStr;
 use std::sync::Arc;
 
 use axum::{Router, routing::post};
@@ -12,13 +13,13 @@ pub(crate) type GlobalConfig = Arc<RwLock<Config>>;
 
 #[tokio::main]
 async fn main() {
+    let config = grhooks_config::get_config();
     tracing_subscriber::fmt()
-        .with_max_level(LevelFilter::TRACE)
+        .with_max_level(LevelFilter::from_str(&config.verbose).unwrap_or(LevelFilter::INFO))
         .with_file(true)
         .with_line_number(true)
         .init();
 
-    let config = grhooks_config::get_config();
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", config.port))
         .await
         .unwrap();
