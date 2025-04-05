@@ -3,20 +3,14 @@ use std::path::PathBuf;
 use clap::{Arg, Command};
 use serde::Deserialize;
 
-#[derive(Clone, Debug, Default, Deserialize)]
-pub enum Origin {
-    #[default]
-    Github,
-    Gitlab,
-}
-
 #[derive(Clone, Debug, Deserialize)]
 pub struct WebhookConfig {
     pub path: Option<String>,
-    pub origin: Option<Origin>,
     pub secret: Option<String>,
     pub events: Vec<String>,
-    pub command: String,
+    pub shell: Option<Vec<String>>,
+    pub command: Option<String>,
+    pub script: Option<PathBuf>,
 }
 
 #[derive(Clone, Debug, Deserialize)]

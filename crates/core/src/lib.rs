@@ -3,6 +3,10 @@ use std::sync::Arc;
 use serde_json::Value;
 use srtemplate::SrTemplate;
 
+mod cmd;
+
+pub use cmd::execute_command;
+
 pub fn process_value<'a>(ctx: Arc<SrTemplate<'a>>, prefix: &'a str, value: &'a Value) {
     match value {
         Value::Null => {

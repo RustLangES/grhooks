@@ -10,5 +10,7 @@ repository.workspace = true
 [dependencies]
 grhooks-config = { version = "0.1.0", path = "../config" }
 serde_json.workspace = true
-srtemplate = { version = "0.3", default-features = false, path = "../../../../../rust/srtemplate" }
+srtemplate = "0.3"
+tempfile = "3.19.1"
+tokio = { version = "1.44.1", default-features = false, features = ["process"] }
 tracing.workspace = true
