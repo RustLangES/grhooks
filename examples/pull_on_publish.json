@@ -1,0 +1,10 @@
+{
+  "port": 8080,
+  "webhooks": [
+    {
+      "path": "publish-image",
+      "events": ["deployment"],
+      "command": "docker pull ${{ env(\"DOCKER_IMAGE_URL\") }}:latest"
+    }
+  ]
+}

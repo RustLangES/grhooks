@@ -1,0 +1,11 @@
+port: 8080
+
+webhooks:
+  - path: ping
+    events:
+      - ping
+    shell:
+      - sh
+      - -c
+    command: |
+      echo "{{ event.type }}: {{ event.zen }} = {{ event.hook_id }}; {{ event.hook.updated_at }}"
