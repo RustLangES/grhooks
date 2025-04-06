@@ -9,7 +9,7 @@ pub async fn execute_command<'a>(
     event_type: &str,
     value: &serde_json::Value,
 ) -> std::io::Result<String> {
-    let ctx = Arc::new(SrTemplate::default());
+    let ctx = Arc::new(SrTemplate::with_delimiter("${{", "}}"));
     ctx.add_variable("event.type", event_type);
     crate::process_value(ctx.clone(), "event", value);
 
