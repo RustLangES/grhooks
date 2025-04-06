@@ -69,13 +69,18 @@ pub async fn validate_signature_middleware(
         return Err(HeaderValidationError::WebhookNotFound);
     };
 
+    let Some(event_type) = headers.get("X-GitHub-Event").and_then(|v| v.to_str().ok()) else {
+        return Err(HeaderValidationError::MissingHeader("X-GitHub-Event"));
+    };
+
     if let Some(secret) = &webhook_config.secret {
+        let secret = grhooks_core::render_secret(secret, event_type);
         let (parts, body) = request.into_parts();
         let bytes = axum::body::to_bytes(body, usize::MAX)
             .await
             .map_err(HeaderValidationError::AxumError)?;
 
-        validate_signature(&headers, secret, &bytes)?;
+        validate_signature(&headers, &secret, &bytes)?;
 
         let request = Request::from_parts(parts, axum::body::Body::from(bytes));
         Ok(next.run(request).await)

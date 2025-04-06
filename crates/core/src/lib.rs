@@ -7,6 +7,14 @@ mod cmd;
 
 pub use cmd::execute_command;
 
+pub fn render_secret(secret: &str, event_type: &str) -> String {
+    let ctx = SrTemplate::with_delimiter("${{", "}}");
+    ctx.add_variable("event.type", event_type);
+    let secret = ctx.render(secret).unwrap_or_else(|_| secret.to_string());
+    tracing::debug!("Rendering secret: {secret}");
+    secret
+}
+
 pub fn process_value<'a>(ctx: Arc<SrTemplate<'a>>, prefix: &'a str, value: &'a Value) {
     match value {
         Value::Null => {
