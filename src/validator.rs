@@ -61,11 +61,7 @@ pub async fn validate_signature_middleware(
     let config = config.read().await;
     let headers = request.headers().clone();
 
-    let Some(webhook_config) = config
-        .webhooks
-        .iter()
-        .find(|w| w.path.as_ref().is_some_and(|p| *p == path))
-    else {
+    let Some(webhook_config) = config.webhooks.iter().find(|w| w.path == path) else {
         return Err(HeaderValidationError::WebhookNotFound);
     };
 

@@ -15,11 +15,7 @@ pub async fn webhook_handler(
     tracing::trace!("Value: {value:?}");
     let config = config.read().await;
 
-    let Some(webhook) = config
-        .webhooks
-        .iter()
-        .find(|w| w.path.as_ref().is_some_and(|p| *p == path))
-    else {
+    let Some(webhook) = config.webhooks.iter().find(|w| w.path == path) else {
         return (
             StatusCode::NOT_FOUND,
             format!("Path {path:?} not registered"),

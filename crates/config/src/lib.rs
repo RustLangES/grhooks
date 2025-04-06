@@ -6,7 +6,7 @@ use serde::Deserialize;
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct WebhookConfig {
-    pub path: Option<String>,
+    pub path: String,
     pub secret: Option<String>,
     pub events: HashSet<String>,
     pub shell: Option<Vec<String>>,
