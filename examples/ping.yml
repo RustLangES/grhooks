@@ -8,4 +8,4 @@ webhooks:
       - sh
       - -c
     command: |
-      echo "{{ event.type }}: {{ event.zen }} = {{ event.hook_id }}; {{ event.hook.updated_at }}"
+      echo "${{ event.type }}: ${{ event.zen }} = ${{ event.hook_id }}; ${{ event.hook.updated_at }}"
