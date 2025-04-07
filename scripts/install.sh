@@ -63,7 +63,7 @@ echo -e "${YELLOW}[1/4] Downloading ...${NC}"
 if [ "$VERSION" == "latest" ]; then
     DOWNLOAD_URL=$(curl -s https://api.github.com/repos/$REPO/releases/latest | grep "browser_download_url.*$ARCH" | grep "linux.*$PKG_TYPE\"" | cut -d '"' -f 4)
 else
-    DOWNLOAD_URL="https://github.com/$REPO/releases/download/$VERSION/grhooks_${VERSION#v}_${ARCH}.${PKG_TYPE}"
+    DOWNLOAD_URL="https://github.com/$REPO/releases/download/$VERSION/grhooks_${VERSION}_linux_${ARCH}.${PKG_TYPE}"
 fi
 
 if [ -z "$DOWNLOAD_URL" ]; then

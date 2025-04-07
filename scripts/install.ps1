@@ -67,7 +67,7 @@ if ($VERSION -eq "latest") {
         $_.name -match "windows" -and $_.name -match $ARCH -and $_.name.EndsWith(".zip")
     } | Select-Object -First 1 -ExpandProperty browser_download_url
 } else {
-    $DOWNLOAD_URL = "https://github.com/$REPO/releases/download/$VERSION/grhooks_${VERSION}_${ARCH}_windows.zip"
+    $DOWNLOAD_URL = "https://github.com/$REPO/releases/download/$VERSION/grhooks_${VERSION}_windows_${ARCH}_windows.zip"
 }
 
 if (-not $DOWNLOAD_URL) {
