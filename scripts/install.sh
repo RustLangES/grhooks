@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 set -e
 
 # Colores
@@ -8,11 +8,11 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 REPO="RustLangES/grhooks"
-VERSION=${GRHOOKS_VERSION:-"latest"}
-INSTALL_DIR=${GRHOOKS_INSTALL_DIR:-"/usr/local/bin"}
-CONFIG_DIR=${GRHOOKS_CONFIG_DIR:-"/etc/grhooks"}
-SERVICE_NAME=${GRHOOKS_SERVICE_NAME:-"grhooks"}
-LOG_LEVEL=${GRHOOKS_LOG_LEVEL:-"info"}
+VERSION=${VERSION:-"latest"}
+INSTALL_DIR=${INSTALL_DIR:-"/usr/local/bin"}
+CONFIG_DIR=${CONFIG_DIR:-"/etc/grhooks"}
+SERVICE_NAME=${SERVICE_NAME:-"grhooks"}
+LOG_LEVEL=${LOG_LEVEL:-"info"}
 
 if [[ "$(uname)" == "Darwin" ]]; then
     echo -e "${RED}Error: This script is just for linux systems${NC}"
@@ -53,7 +53,8 @@ function prompt_yes_no {
     done
 }
 
-if ! prompt_yes_no "Do you want to continue with the installation?"; then
+confirmed=$(prompt_yes_no "Do you want to continue with the installation?")
+if [ "$confirmed" -eq 1 ]; then
     echo -e "${RED}Installation aborted.${NC}"
     exit 1
 fi
