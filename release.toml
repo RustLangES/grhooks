@@ -1,0 +1,5 @@
+allow-branch = ["main", "dev", "!HEAD"]
+publish = false
+pre-release-commit-message = "chore: Release new version"
+tag-message = "chore: Release new version"
+tag-name = "v{{version}}"
