@@ -65,6 +65,10 @@ Commands and scripts can use template variables that will be replaced with value
 > [!NOTE]
 > The template is redered using the [srtemplate](https://github.com/SergioRibera/srtemplate) template engine.
 
+> [!IMPORTANT]
+> If you want to know more about the variables you can use, you should check this [link](https://docs.github.com/es/webhooks/webhook-events-and-payloads#branch_protection_configuration),
+> the hierarchy, names and types are 100% respected in terms of usage, always under the event.\* name.
+
 ### Common Variables
 
 - `${{event.type}}`: The event type that triggered the webhook
