@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-# Colores
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -22,7 +21,7 @@ ARCH=$(uname -m)
 case $ARCH in
     x86_64) ARCH="x86_64"; ARCH_NAME="x86_64 (64-bit)" ;;
     aarch64) ARCH="arm64"; ARCH_NAME="ARM64" ;;
-    *) echo -e "${RED}Arquitectura no soportada: $ARCH${NC}"; exit 1 ;;
+    *) echo -e "${RED}Architecture not supported: $ARCH${NC}"; exit 1 ;;
 esac
 
 if [[ "$(uname)" == "Darwin" ]]; then
@@ -99,7 +98,7 @@ if [[ "$PKG_TYPE" == "deb" || "$PKG_TYPE" == "rpm" ]]; then
         echo -e "${YELLOW}Removing previous version...${NC}"
         sudo rpm --erase grhooks || true
     fi
-    
+
     if [[ "$PKG_TYPE" == "deb" ]]; then
         sudo dpkg -i "$TEMP_DIR/grhooks.deb" || sudo apt-get install -f -y
         INSTALL_DIR=$(which grhooks || echo "/usr/bin/grhooks")
