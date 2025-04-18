@@ -1,3 +1,5 @@
+#![allow(clippy::missing_panics_doc)]
+
 use std::collections::HashSet;
 use std::path::PathBuf;
 
@@ -77,6 +79,7 @@ impl Config {
     }
 }
 
+#[must_use]
 pub fn parse_config(path: &PathBuf) -> Config {
     if path.is_dir() {
         let mut config = Config::default();
@@ -103,6 +106,7 @@ pub fn parse_config(path: &PathBuf) -> Config {
     }
 }
 
+#[must_use]
 pub fn get_config() -> (PathBuf, Config) {
     let args = Command::new("grhooks")
         .version(env!("CARGO_PKG_VERSION"))

@@ -30,7 +30,7 @@ impl WebhookOrigin for GitLabValidator {
         headers
             .get("X-Gitlab-Event")
             .and_then(|v| v.to_str().ok())
-            .map(|s| s.to_string())
+            .map(ToString::to_string)
             .ok_or(Error::MissingHeader("X-Gitlab-Event"))
     }
 

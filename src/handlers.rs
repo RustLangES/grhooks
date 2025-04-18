@@ -25,20 +25,21 @@ pub async fn webhook_handler(
     let Some(event_type) = header.get("X-GitHub-Event").and_then(|v| v.to_str().ok()) else {
         return (
             StatusCode::BAD_REQUEST,
-            format!("Missing X-GitHub-Event header"),
+            "Missing X-GitHub-Event header".to_string(),
         );
     };
 
-    if !webhook.events.is_empty() && !webhook.events.contains(&"*".to_string()) {
-        if !webhook.events.contains(&event_type.to_string()) {
-            return (
-                StatusCode::BAD_REQUEST,
-                format!("Event '{event_type}' not allowed"),
-            );
-        }
+    if !webhook.events.is_empty()
+        && !webhook.events.contains("*")
+        && !webhook.events.contains(event_type)
+    {
+        return (
+            StatusCode::BAD_REQUEST,
+            format!("Event '{event_type}' not allowed"),
+        );
     }
 
-    match grhooks_core::execute_command(&webhook, event_type, &value).await {
+    match grhooks_core::execute_command(webhook, event_type, &value).await {
         Ok(output) => (StatusCode::OK, output),
         Err(e) => {
             tracing::error!("Error executing command: {e}");

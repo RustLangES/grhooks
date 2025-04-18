@@ -13,7 +13,7 @@ pub enum Error {
 impl Debug for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Error::MissingHeader(header) => write!(f, "Missing required header: {}", header),
+            Error::MissingHeader(header) => write!(f, "Missing required header: {header}"),
             Error::InvalidSignature => write!(f, "Invalid signature"),
             Error::InvalidUserAgent => write!(f, "Invalid user agent"),
             Error::UnsupportedEvent => write!(f, "Unsupported event type"),
@@ -26,7 +26,7 @@ impl IntoResponse for Error {
         match self {
             Error::MissingHeader(header) => (
                 StatusCode::BAD_REQUEST,
-                format!("Missing required header: {}", header),
+                format!("Missing required header: {header}"),
             )
                 .into_response(),
             Error::InvalidSignature => {

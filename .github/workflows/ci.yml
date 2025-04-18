@@ -29,6 +29,6 @@ jobs:
         uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - name: cargo check
+      - name: Checks
         run: |
-          cargo clippy -- -D warnings
+          cargo clippy -- -D warnings -D clippy::pedantic

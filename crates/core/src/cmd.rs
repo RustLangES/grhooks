@@ -1,17 +1,16 @@
 use std::path::PathBuf;
-use std::sync::Arc;
 
 use grhooks_config::WebhookConfig;
 use srtemplate::SrTemplate;
 
-pub async fn execute_command<'a>(
+pub async fn execute_command(
     config: &WebhookConfig,
     event_type: &str,
     value: &serde_json::Value,
 ) -> std::io::Result<String> {
-    let ctx = Arc::new(SrTemplate::with_delimiter("${{", "}}"));
+    let ctx = SrTemplate::with_delimiter("${{", "}}");
     ctx.add_variable("event.type", event_type);
-    crate::process_value(ctx.clone(), "event", value);
+    crate::process_value(&ctx, "event", value);
 
     let (shell, args) = if let Some(shell) = config.shell.as_ref() {
         let mut args = shell.clone();
@@ -22,9 +21,9 @@ pub async fn execute_command<'a>(
     };
 
     let output = if let Some(script_path) = &config.script {
-        execute_script(ctx.as_ref(), script_path, &shell, &args).await?
+        execute_script(&ctx, script_path, &shell, &args).await?
     } else if let Some(command) = config.command.as_deref() {
-        execute_direct_command(ctx.as_ref(), command, &shell, &args).await?
+        execute_direct_command(&ctx, command, &shell, &args).await?
     } else {
         return Err(std::io::Error::new(
             std::io::ErrorKind::Other,
@@ -35,8 +34,8 @@ pub async fn execute_command<'a>(
     Ok(output)
 }
 
-async fn execute_direct_command<'a>(
-    ctx: &SrTemplate<'a>,
+async fn execute_direct_command(
+    ctx: &SrTemplate<'_>,
     command: &str,
     shell: &str,
     shell_args: &[String],
@@ -55,11 +54,11 @@ async fn execute_direct_command<'a>(
         .output()
         .await?;
 
-    handle_command_output(output, &rendered_cmd)
+    handle_command_output(&output, &rendered_cmd)
 }
 
-async fn execute_script<'a>(
-    ctx: &SrTemplate<'a>,
+async fn execute_script(
+    ctx: &SrTemplate<'_>,
     script_path: &PathBuf,
     shell: &str,
     shell_args: &[String],
@@ -93,10 +92,10 @@ async fn execute_script<'a>(
         .output()
         .await?;
 
-    handle_command_output(output, &format!("script: {temp_script:?}"))
+    handle_command_output(&output, &format!("script: {temp_script:?}"))
 }
 
-fn handle_command_output(output: std::process::Output, context: &str) -> std::io::Result<String> {
+fn handle_command_output(output: &std::process::Output, context: &str) -> std::io::Result<String> {
     if !output.status.success() {
         let err_msg = format!(
             "Command failed ({} - {}):\nSTDERR: {}\nSTDOUT: {}",

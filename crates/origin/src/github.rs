@@ -38,7 +38,7 @@ impl WebhookOrigin for GitHubValidator {
         headers
             .get("X-GitHub-Event")
             .and_then(|v| v.to_str().ok())
-            .map(|s| s.to_string())
+            .map(ToString::to_string)
             .ok_or(Error::MissingHeader("X-GitHub-Event"))
     }
 
@@ -48,30 +48,27 @@ impl WebhookOrigin for GitHubValidator {
         secret: &str,
         body: &[u8],
     ) -> Result<(), Error> {
-        let (expected_signature, signature) = match headers
+        let (expected_signature, signature) = if let Some(signature) = headers
             .get("X-Hub-Signature-256")
             .and_then(|v| v.to_str().ok())
         {
-            Some(signature) => {
-                let signature = signature.trim_start_matches("sha256=");
-                let mut mac = Hmac::<Sha256>::new_from_slice(secret.as_bytes())
-                    .map_err(|_| Error::InvalidSignature)?;
-                mac.update(body);
-                let expected_signature = hex::encode(mac.finalize().into_bytes());
-                (expected_signature, signature)
-            }
-            None => {
-                let signature = headers
-                    .get("X-Hub-Signature")
-                    .and_then(|v| v.to_str().ok())
-                    .ok_or(Error::MissingHeader("X-Hub-Signature"))?;
-                let signature = signature.trim_start_matches("sha1=");
-                let mut mac = Hmac::<Sha1>::new_from_slice(secret.as_bytes())
-                    .map_err(|_| Error::InvalidSignature)?;
-                mac.update(body);
-                let expected_signature = hex::encode(mac.finalize().into_bytes());
-                (expected_signature, signature)
-            }
+            let signature = signature.trim_start_matches("sha256=");
+            let mut mac = Hmac::<Sha256>::new_from_slice(secret.as_bytes())
+                .map_err(|_| Error::InvalidSignature)?;
+            mac.update(body);
+            let expected_signature = hex::encode(mac.finalize().into_bytes());
+            (expected_signature, signature)
+        } else {
+            let signature = headers
+                .get("X-Hub-Signature")
+                .and_then(|v| v.to_str().ok())
+                .ok_or(Error::MissingHeader("X-Hub-Signature"))?;
+            let signature = signature.trim_start_matches("sha1=");
+            let mut mac = Hmac::<Sha1>::new_from_slice(secret.as_bytes())
+                .map_err(|_| Error::InvalidSignature)?;
+            mac.update(body);
+            let expected_signature = hex::encode(mac.finalize().into_bytes());
+            (expected_signature, signature)
         };
 
         if !constant_time_eq::constant_time_eq(signature.as_bytes(), expected_signature.as_bytes())

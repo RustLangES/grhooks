@@ -46,7 +46,7 @@ async fn main() {
 
     println!("listening on {}", listener.local_addr().unwrap());
 
-    axum::serve(listener, app).await.unwrap()
+    axum::serve(listener, app).await.unwrap();
 }
 
 fn listen_config_changes(state: GlobalConfig) -> impl EventHandler {
@@ -60,7 +60,7 @@ fn listen_config_changes(state: GlobalConfig) -> impl EventHandler {
             config.webhooks = Vec::new(); // restore webhooks
             event.paths.iter().for_each(|path| {
                 tracing::info!("Config file changed: {path:?}");
-                config.merge(grhooks_config::parse_config(&path))
+                config.merge(grhooks_config::parse_config(path));
             });
             config.print_paths();
         }
