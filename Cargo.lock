@@ -382,15 +382,10 @@ name = "grhooks"
 version = "0.1.1"
 dependencies = [
  "axum",
- "constant_time_eq",
  "grhooks-config",
  "grhooks-core",
- "hex",
- "hmac",
  "notify",
  "serde_json",
- "sha1",
- "sha2",
  "tokio",
  "tracing",
  "tracing-subscriber",
@@ -401,6 +396,7 @@ name = "grhooks-config"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "grhooks-origin",
  "serde",
  "serde_json",
  "serde_yaml",
@@ -417,6 +413,19 @@ dependencies = [
  "tempfile",
  "tokio",
  "tracing",
+]
+
+[[package]]
+name = "grhooks-origin"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "constant_time_eq",
+ "hex",
+ "hmac",
+ "serde",
+ "sha1",
+ "sha2",
 ]
 
 [[package]]

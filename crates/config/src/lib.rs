@@ -2,11 +2,16 @@ use std::collections::HashSet;
 use std::path::PathBuf;
 
 use clap::{Arg, Command};
+use grhooks_origin::Origin;
 use serde::Deserialize;
+
+pub use grhooks_origin;
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct WebhookConfig {
     pub path: String,
+    #[serde(default = "Origin::default")]
+    pub origin: Origin,
     pub secret: Option<String>,
     pub events: HashSet<String>,
     pub shell: Option<Vec<String>>,
@@ -16,10 +21,15 @@ pub struct WebhookConfig {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Config {
+    #[serde(default = "default_port")]
     pub port: u16,
     #[serde(skip)]
     pub verbose: String,
     pub webhooks: Vec<WebhookConfig>,
+}
+
+const fn default_port() -> u16 {
+    8080
 }
 
 impl Default for Config {

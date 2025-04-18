@@ -1,0 +1,17 @@
+[package]
+name = "grhooks-origin"
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+description.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+axum = { version = "0.8.3", default-features = false }
+serde = { version = "1", default-features = false, features = ["derive"] }
+constant_time_eq = "0.4"
+hex = "0.4"
+hmac = "0.12"
+sha1 = "0.10"
+sha2 = "0.10"
