@@ -56,6 +56,8 @@ pub async fn validate_signature_middleware(
 fn determine_origin(headers: &HeaderMap) -> Result<Origin, OriginError> {
     if headers.contains_key("X-GitHub-Event") {
         Ok(Origin::GitHub)
+    } else if headers.contains_key("X-Gitlab-Event") {
+        Ok(Origin::GitLab)
     } else {
         Err(OriginError::MissingHeader("X-*-Event"))
     }
