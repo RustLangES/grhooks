@@ -8,6 +8,7 @@ use notify::{EventHandler, EventKind, Watcher};
 use tokio::sync::RwLock;
 use tracing::level_filters::LevelFilter;
 
+mod errors;
 mod handlers;
 mod validator;
 
