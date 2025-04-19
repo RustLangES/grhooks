@@ -1,6 +1,5 @@
 use axum::{
     extract::{Path, Request, State},
-    http::HeaderMap,
     middleware::Next,
     response::Response,
 };
@@ -14,7 +13,7 @@ pub async fn validate_headers(
     next: Next,
 ) -> Result<Response, HeaderValidationError> {
     let headers = request.headers();
-    let origin = determine_origin(headers)?;
+    let origin = Origin::try_from(headers)?;
     origin.validate_headers(headers)?;
     Ok(next.run(request).await)
 }
@@ -27,6 +26,7 @@ pub async fn validate_signature_middleware(
 ) -> Result<Response, HeaderValidationError> {
     let config = config.read().await;
     let headers = request.headers().clone();
+    let origin = Origin::try_from(&headers)?;
 
     let webhook_config = config
         .webhooks
@@ -44,21 +44,11 @@ pub async fn validate_signature_middleware(
             .await
             .map_err(HeaderValidationError::AxumError)?;
 
-        validator.validate_signature(&headers, &secret, &bytes)?;
+        origin.validate_signature(&headers, &secret, &bytes)?;
 
         let request = Request::from_parts(parts, axum::body::Body::from(bytes));
         Ok(next.run(request).await)
     } else {
         Ok(next.run(request).await)
-    }
-}
-
-fn determine_origin(headers: &HeaderMap) -> Result<Origin, OriginError> {
-    if headers.contains_key("X-GitHub-Event") {
-        Ok(Origin::GitHub)
-    } else if headers.contains_key("X-Gitlab-Event") {
-        Ok(Origin::GitLab)
-    } else {
-        Err(OriginError::MissingHeader("X-*-Event"))
     }
 }

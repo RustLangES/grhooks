@@ -17,6 +17,20 @@ pub enum Origin {
     GitLab,
 }
 
+impl<'a> TryFrom<&'a HeaderMap> for Origin {
+    type Error = Error;
+
+    fn try_from(headers: &'a HeaderMap) -> Result<Self, Self::Error> {
+        if headers.contains_key("X-GitHub-Event") {
+            Ok(Origin::GitHub)
+        } else if headers.contains_key("X-Gitlab-Event") {
+            Ok(Origin::GitLab)
+        } else {
+            Err(Self::Error::MissingHeader("X-*-Event"))
+        }
+    }
+}
+
 pub trait WebhookOrigin {
     fn validate_headers(&self, headers: &HeaderMap) -> Result<(), Error>;
     fn extract_event_type(&self, headers: &HeaderMap) -> Result<String, Error>;
