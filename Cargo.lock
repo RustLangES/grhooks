@@ -384,6 +384,7 @@ dependencies = [
  "axum",
  "grhooks-config",
  "grhooks-core",
+ "grhooks-origin",
  "notify",
  "serde_json",
  "tokio",

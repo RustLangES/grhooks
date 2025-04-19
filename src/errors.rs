@@ -1,6 +1,5 @@
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
-use grhooks_config::grhooks_origin;
 
 #[derive(Debug)]
 pub enum HeaderValidationError {

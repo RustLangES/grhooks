@@ -3,8 +3,8 @@ use axum::{
     middleware::Next,
     response::Response,
 };
-use grhooks_config::grhooks_origin::{Error as OriginError, Origin, WebhookOrigin};
 use grhooks_core::render_secret;
+use grhooks_origin::{Origin, WebhookOrigin};
 
 use crate::{GlobalConfig, errors::HeaderValidationError};
 
@@ -34,8 +34,7 @@ pub async fn validate_signature_middleware(
         .find(|w| w.path == path)
         .ok_or(HeaderValidationError::WebhookNotFound)?;
 
-    let validator = webhook_config.origin;
-    let event_type = validator.extract_event_type(&headers)?;
+    let event_type = origin.extract_event_type(&headers)?;
 
     if let Some(secret) = &webhook_config.secret {
         let secret = render_secret(secret, &event_type);
