@@ -131,8 +131,9 @@ When a `secret` is configured in the webhook:
 GRHooks currently supports webhooks from:
 
 - GitHub
+- Gitlab
+- [Custom](./crates/origin/README.md)
 
 Plans to support:
 
-- GitLab
 - Bitbucket

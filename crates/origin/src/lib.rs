@@ -8,6 +8,7 @@ pub use crate::errors::Error;
 mod errors;
 mod github;
 mod gitlab;
+mod webhook;
 
 #[derive(Clone, Copy, Debug, Default, Deserialize)]
 #[serde(rename_all = "lowercase")]
@@ -15,6 +16,7 @@ pub enum Origin {
     #[default]
     GitHub,
     GitLab,
+    Webhook,
 }
 
 impl<'a> TryFrom<&'a HeaderMap> for Origin {
@@ -25,6 +27,8 @@ impl<'a> TryFrom<&'a HeaderMap> for Origin {
             Ok(Origin::GitHub)
         } else if headers.contains_key("X-Gitlab-Event") {
             Ok(Origin::GitLab)
+        } else if headers.contains_key("X-Webhook-Event") {
+            Ok(Origin::Webhook)
         } else {
             Err(Self::Error::MissingHeader("X-*-Event"))
         }
@@ -47,6 +51,7 @@ impl WebhookOrigin for Origin {
         match self {
             Origin::GitHub => github::GitHubValidator.validate_headers(headers),
             Origin::GitLab => gitlab::GitLabValidator.validate_headers(headers),
+            Origin::Webhook => webhook::WebhookValidator.validate_headers(headers),
         }
     }
 
@@ -54,6 +59,7 @@ impl WebhookOrigin for Origin {
         match self {
             Origin::GitHub => github::GitHubValidator.extract_event_type(headers),
             Origin::GitLab => gitlab::GitLabValidator.extract_event_type(headers),
+            Origin::Webhook => webhook::WebhookValidator.extract_event_type(headers),
         }
     }
 
@@ -66,6 +72,7 @@ impl WebhookOrigin for Origin {
         match self {
             Origin::GitHub => github::GitHubValidator.validate_signature(headers, secret, body),
             Origin::GitLab => gitlab::GitLabValidator.validate_signature(headers, secret, body),
+            Origin::Webhook => webhook::WebhookValidator.validate_signature(headers, secret, body),
         }
     }
 }
