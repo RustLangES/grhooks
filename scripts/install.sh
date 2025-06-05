@@ -63,7 +63,7 @@ function prompt_yes_no {
 }
 
 confirmed=$(prompt_yes_no "Do you want to continue with the installation?")
-if [ "$confirmed" -eq 1 ]; then
+if [ $confirmed == 1 ]; then
     echo -e "${RED}Installation aborted.${NC}"
     exit 1
 fi
@@ -101,10 +101,10 @@ if [[ "$PKG_TYPE" == "deb" || "$PKG_TYPE" == "rpm" ]]; then
 
     if [[ "$PKG_TYPE" == "deb" ]]; then
         sudo dpkg -i "$TEMP_DIR/grhooks.deb" || sudo apt-get install -f -y
-        INSTALL_DIR=$(which grhooks || echo "/usr/bin/grhooks")
+        INSTALL_DIR=$(dirname $(which grhooks) || echo "/usr/bin/grhooks")
     else
         sudo rpm -ivh "$TEMP_DIR/grhooks.rpm" || sudo yum install -y
-        INSTALL_DIR=$(which grhooks || echo "/usr/bin/grhooks")
+        INSTALL_DIR=$(dirname $(which grhooks) || echo "/usr/bin/grhooks")
     fi
 else
     sudo tar -xJf "$TEMP_DIR/grhooks.tar.xz" -C "$TEMP_DIR"
