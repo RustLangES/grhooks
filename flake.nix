@@ -11,6 +11,7 @@
   outputs = { nixpkgs, flake-utils, rust-overlay, ... }:
     flake-utils.lib.eachDefaultSystem (baseSystem:
       let
+        cargoManifest = builtins.fromTOML (builtins.readFile ./Cargo.toml);
         overlays = [ (import rust-overlay) ];
         pkgs = import nixpkgs {
           system = baseSystem;
@@ -67,6 +68,19 @@
             ++ lib.optionals (os == "macos") [ clang darwin.apple_sdk.frameworks.CoreFoundation ];
         };
 
+        containerPkg = variant: let
+          pkg = mkPackage variant;
+          # arch = if variant.arch == "x86_64" then "amd" else "arm";
+        in pkgs.dockerTools.buildLayeredImage rec {
+          name = cargoManifest.package.name;
+          tag = cargoManifest.package.version;
+          created = "now";
+          # architecture = "linux/${arch}64";
+
+          contents = [ pkg ];
+          config.Cmd = ["/bin/${name}"];
+        };
+
         generatedMatrixJson = builtins.toJSON (lib.flatten (map ({ arch, os, formats, ... }:
           map (format: {
             arch = arch;
@@ -96,7 +110,10 @@
         packages = lib.listToAttrs (map ({ arch, os, target, ... }: {
           name = "${os}-${arch}";
           value = mkPackage { inherit arch os target; };
-        }) architectures);
+        }) architectures) // (pkgs.lib.listToAttrs (map ({arch, ...} @ args: {
+          name = "image-${arch}";
+          value = containerPkg args;
+        }) architectures));
 
         apps = {
           help = {
@@ -112,6 +129,8 @@
               echo -e "\033[0;35mAvailable OS:\033[0m"
               ${lib.concatMapStringsSep "\n" (os: ''echo "  - ${os}"'') (lib.lists.unique (map ({ os, ... }: os) architectures))}
               echo ""
+              echo -e "\033[0;32mTo build docker image, use:\033[0m"
+              echo "  nix build .#image-<arch>"
               echo -e "\033[0;32mTo build a specific variant, use:\033[0m"
               echo "  nix build .#<os>-<arch>"
               echo ""
