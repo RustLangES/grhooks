@@ -197,7 +197,7 @@ jobs:
         run: |
           nix build .#image-${{ matrix.arch }}
           docker load < ./result
-          docker tag grhooks:${{ env.VERSION }} ghcr.io/${{ env.REPOSITORY }}/grhooks:${{ matrix.arch }}
+          docker tag grhooks:${{ env.VERSION }} ghcr.io/${{ env.REPOSITORY }}:${{ matrix.arch }}
 
   docker-publish:
     runs-on: ubuntu-latest
@@ -217,15 +217,15 @@ jobs:
         run: echo "REPOSITORY=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
       - name: Create and push manifest
         run: |
-          IMAGE=ghcr.io/${{ env.REPOSITORY }}/grhooks:${{ env.VERSION }}
+          IMAGE=ghcr.io/${{ env.REPOSITORY }}:${{ env.VERSION }}
 
           echo "Creating manifest for architectures: $ARCHS"
 
           manifest_args=""
           for arch in $(echo "$ARCHS" | jq -r '.[].arch'); do
-            manifest_args="$manifest_args --amend ghcr.io/${{ env.REPOSITORY }}/grhooks:$arch"
+            manifest_args="$manifest_args --amend ghcr.io/${{ env.REPOSITORY }}:$arch"
           done
 
           echo "Running docker manifest create $IMAGE $manifest_args"
           eval docker manifest create $IMAGE $manifest_args
-          docker manifest push $IMAGE
+          docker push $IMAGE
