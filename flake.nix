@@ -51,7 +51,7 @@
           '';
         };
 
-        mkPackage = { arch, os, target }: let
+        mkPackage = { arch, os, target, ... }: let
           crossPkgs = mkCrossPkgs { inherit arch os; };
         in pkgs.rustPlatform.buildRustPackage {
           pname = "grhooks";
@@ -107,10 +107,10 @@
           };
         };
 
-        packages = lib.listToAttrs (map ({ arch, os, target, ... }: {
+        packages = (lib.listToAttrs (map ({ arch, os, target, ... }: {
           name = "${os}-${arch}";
           value = mkPackage { inherit arch os target; };
-        }) architectures) // (pkgs.lib.listToAttrs (map ({arch, ...} @ args: {
+        }) architectures)) // (pkgs.lib.listToAttrs (map ({arch, ...} @ args: {
           name = "image-${arch}";
           value = containerPkg args;
         }) architectures));
