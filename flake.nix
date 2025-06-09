@@ -108,6 +108,9 @@
               else ".#toTarball";
           }) formats
         ) architectures));
+
+        archList = uniqueBy (i: i.arch) architectures;
+        generatedArchJson = builtins.toJSON archList;
       in
       {
         devShells = lib.listToAttrs (map ({ arch, os, target, ... }: {
@@ -128,9 +131,7 @@
         }) architectures)) // (pkgs.lib.listToAttrs (map ({arch, ...} @ args: {
           name = "image-${arch}";
           value = containerPkg args;
-        })
-            (uniqueBy (i: i.arch) architectures)
-        ));
+        }) archList));
 
         apps = {
           help = {
@@ -161,6 +162,14 @@
             program = toString (pkgs.writeScript "generate-matrix" ''
               #!/bin/sh
               echo '${generatedMatrixJson}'
+            '');
+          };
+
+          archs = {
+            type = "app";
+            program = toString (pkgs.writeScript "generate-arch-list" ''
+              #!/bin/sh
+              echo '${generatedArchJson}'
             '');
           };
         };
