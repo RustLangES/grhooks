@@ -3,6 +3,7 @@ name: Release Build and Publish
 permissions:
   contents: write
   pull-requests: read
+  packages: write
 
 on:
   push:
@@ -193,6 +194,13 @@ jobs:
           extra_nix_config: |
             experimental-features = nix-command flakes
 
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build individual images with Nix
         run: |
           nix build .#image-${{ matrix.arch }}
@@ -227,7 +235,7 @@ jobs:
 
           manifest_args=""
           for arch in $(echo "$ARCHS" | jq -r '.[].arch'); do
-            manifest_args="$manifest_args --amend ghcr.io/${{ env.REPOSITORY }}:$arch"
+            manifest_args="$manifest_args --amend ghcr.io/${{ env.REPOSITORY }}:${{ env.VERSION }}-$arch"
           done
 
           echo "Running docker manifest create $IMAGE $manifest_args"
