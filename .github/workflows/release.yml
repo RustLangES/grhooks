@@ -157,6 +157,8 @@ jobs:
       VERSION: ${{ github.event.inputs.release_name || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
+      - name: Set Repository Lowercase
+        run: echo "REPOSITORY=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
 
       - name: Install Nix
         uses: cachix/install-nix-action@v30
@@ -170,12 +172,12 @@ jobs:
         run: |
           nix build .#image-${{ matrix.arch }}
           docker load < ./result
-          docker tag grhooks:${{ env.VERSION }} ghcr.io/${{ github.repository_owner }}/grhooks:${{ matrix.arch }}
+          docker tag grhooks:${{ env.VERSION }} ghcr.io/${{ env.REPOSITORY }}/grhooks:${{ matrix.arch }}
 
       - name: Create and push unified manifest
         run: |
-          docker manifest create ghcr.io/${{ github.repository_owner }}/grhooks:${{ env.VERSION }} \
-            --amend ghcr.io/${{ github.repository_owner }}/grhooks:${{ matrix.arch }}
+          docker manifest create ghcr.io/${{ env.REPOSITORY }}/grhooks:${{ env.VERSION }} \
+            --amend ghcr.io/${{ env.REPOSITORY }}/grhooks:${{ matrix.arch }}
 
   docker-publish:
     runs-on: ubuntu-latest
@@ -190,16 +192,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set Repository Lowercase
+        run: echo "REPOSITORY=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
       - name: Create and push manifest
         run: |
-          IMAGE=ghcr.io/${{ github.repository_owner }}/grhooks:${{ env.VERSION }}
+          IMAGE=ghcr.io/${{ env.REPOSITORY }}/grhooks:${{ env.VERSION }}
           ARCHS='${{ needs.generate-matrix.outputs.arch_list }}'
 
           echo "Creating manifest for architectures: $ARCHS"
 
           manifest_args=""
           for arch in $(echo "$ARCHS" | jq -r '.[]'); do
-            manifest_args="$manifest_args --amend ghcr.io/${{ github.repository_owner }}/grhooks:$arch"
+            manifest_args="$manifest_args --amend ghcr.io/${{ env.REPOSITORY }}/grhooks:$arch"
           done
 
           echo "Running docker manifest create $IMAGE $manifest_args"
