@@ -19,6 +19,21 @@
         };
         lib = pkgs.lib;
 
+        uniqueBy = filter: list:
+            let
+              aux = seen: remaining:
+                if remaining == [] then []
+                else
+                  let
+                    item = builtins.head remaining;
+                    rest = builtins.tail remaining;
+                  in
+                  if builtins.elem (filter item) seen then
+                    aux seen rest
+                  else
+                    [item] ++ aux (seen ++ [(filter item)]) rest;
+            in aux [] list;
+
         mkCrossPkgs = { arch, os }: let
           cross = arch + "-" + os;
           crossSystem = lib.systems.elaborate cross;
@@ -113,7 +128,9 @@
         }) architectures)) // (pkgs.lib.listToAttrs (map ({arch, ...} @ args: {
           name = "image-${arch}";
           value = containerPkg args;
-        }) architectures));
+        })
+            (uniqueBy (i: i.arch) architectures)
+        ));
 
         apps = {
           help = {
