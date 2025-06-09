@@ -197,7 +197,11 @@ jobs:
         run: |
           nix build .#image-${{ matrix.arch }}
           docker load < ./result
-          docker tag grhooks:${{ env.VERSION }} ghcr.io/${{ env.REPOSITORY }}:${{ matrix.arch }}
+          docker tag grhooks:${{ env.VERSION }} ghcr.io/${{ env.REPOSITORY }}:${{ env.VERSION }}-${{ matrix.arch }}
+
+      - name: Push image
+        run: |
+          docker push ghcr.io/${{ env.REPOSITORY }}:${{ env.VERSION }}-${{ matrix.arch }}
 
   docker-publish:
     runs-on: ubuntu-latest
@@ -228,4 +232,4 @@ jobs:
 
           echo "Running docker manifest create $IMAGE $manifest_args"
           eval docker manifest create $IMAGE $manifest_args
-          docker push $IMAGE
+          docker manifest push $IMAGE
