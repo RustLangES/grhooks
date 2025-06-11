@@ -108,11 +108,12 @@ pub fn get_config() -> (PathBuf, Config) {
         .about(env!("CARGO_PKG_DESCRIPTION"))
         .arg(
             Arg::new("manifest-dir")
+                .short('c')
                 .alias("config-dir")
                 .env("GRHOOKS_MANIFEST_DIR")
                 .required(true)
                 .num_args(1)
-                .help("Path to the configuration file")
+                .help("Path to the configuration file or directory")
                 .value_parser(clap::builder::PathBufValueParser::new()),
         )
         .arg(
