@@ -43,6 +43,10 @@ async fn main() {
             validator::validate_signature_middleware,
         ))
         .with_state(state);
+    
+    let health = Router::new()
+        .route("/health", axum::routing::get(routes::healthcheck))
+        .nest("/", app);
 
     println!("listening on {}", listener.local_addr().unwrap());
 
