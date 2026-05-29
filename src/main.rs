@@ -1,7 +1,7 @@
 use std::str::FromStr;
 use std::sync::Arc;
 
-use axum::{Router, routing::post};
+use axum::{Router, routing::{get, post}};
 use grhooks_config::Config;
 use notify::event::{DataChange, ModifyKind};
 use notify::{EventHandler, EventKind, Watcher};
@@ -10,6 +10,7 @@ use tracing::level_filters::LevelFilter;
 
 mod errors;
 mod handlers;
+mod health;
 mod validator;
 
 pub(crate) type GlobalConfig = Arc<RwLock<Config>>;
@@ -24,6 +25,9 @@ async fn main() {
         .init();
     config.print_paths();
 
+    // Initialize health system
+    health::init_health_system();
+
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", config.port))
         .await
         .unwrap();
@@ -36,6 +40,11 @@ async fn main() {
         .unwrap();
 
     let app = Router::new()
+        // Health check endpoints (no authentication required)
+        .route("/health", get(health::health_handler))
+        .route("/health/ready", get(health::readiness_handler))
+        .route("/health/live", get(health::liveness_handler))
+        // Webhook endpoints with authentication
         .route("/{*path}", post(handlers::webhook_handler))
         .layer(axum::middleware::from_fn(validator::validate_headers))
         .layer(axum::middleware::from_fn_with_state(

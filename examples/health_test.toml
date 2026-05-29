@@ -1,0 +1,12 @@
+port = 8080
+
+[[webhooks]]
+path = "deploy"
+secret = "mysecret123"
+events = ["push", "pull_request"]
+command = "echo 'Deployment triggered by webhook'"
+
+[[webhooks]]
+path = "test"
+events = ["*"]
+command = "echo 'Test webhook received: ${{event.type}}'"
